@@ -95,4 +95,27 @@ int main()
                     new CleaningTool("Pressure Washer"),
             };
 
+    int id;
+    std::cout << "Please enter your ID: ";
+    std::cin >> id;
+
+    Worker* company_worker = nullptr; // a pointer to store the found worker
+    // this will search for the worker with the entered ID
+    for (Worker& worker : workers)
+    {
+        if (worker.id == id)
+        {
+            company_worker = &worker;
+            break;
+        }
+    }
+
+    // if the worker is not found, this will ask for the ID again
+    if (company_worker == nullptr)
+    {
+        std::cout << "Invalid ID. Try again.\n";
+    }
+
+    // after the ID and name has been found this part will greet the user and show them the list of the tools
+    std::cout << "Hello, " << company_worker->name << " (" << company_worker->id << "), TEST COMPLETED\n";
 };
