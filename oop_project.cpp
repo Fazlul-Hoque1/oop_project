@@ -57,8 +57,7 @@ public:
     Worker(std::string name, int iD) : name(std::move(name)), id(iD) {}
 };
 
-int main()
-{
+int main() {
     // this contains all the information of the workers that are working in the company ( Name and ID )
     std::vector<Worker> workers =
             {
@@ -76,7 +75,7 @@ int main()
 
     // this bit contains all the class/names of the tools that will be used later in the program
     // the format being used for tools is ( "name_of_the_tool", "tool_description" )
-    std::vector<Tool*> tools =
+    std::vector<Tool *> tools =
             {
                     new ConstructionTool("Hammer"),
                     new ConstructionTool("Screwdriver"),
@@ -95,63 +94,70 @@ int main()
                     new CleaningTool("Pressure Washer"),
             };
 
-    // ask the user to enter the iD
-    int id;
-    std::cout << "Please enter your ID: ";
-    std::cin >> id;
-
-    Worker* company_worker = nullptr; // a pointer to store the found worker
-    // this will search for the worker with the entered ID
-    for (Worker& worker : workers)
+    while (true)
     {
-        if (worker.id == id)
-        {
-            company_worker = &worker;
-            break;
+        // ask the user to enter the iD
+        int id;
+        std::cout << "Please enter your ID: ";
+        std::cin >> id;
+
+        Worker *company_worker = nullptr; // a pointer to store the found worker
+        // this will search for the worker with the entered ID
+        for (Worker &worker: workers) {
+            if (worker.id == id) {
+                company_worker = &worker;
+                break;
+            }
         }
-    }
 
-    // if the worker is not found, this will ask for the ID again
-    if (company_worker == nullptr)
-    {
-        std::cout << "Invalid ID. Try again.\n";
-    }
-
-    // after the ID and name has been found this part will greet the user and show them the list of the tools
-    std::cout << "Hello, " << company_worker->name << " (" << company_worker->id << "), What would you like to borrow today?\n";
-
-    // displays the tools
-    for (int i = 0; i < tools.size(); i++)
-    {
-        Tool* tool = tools[i];
-        if (!tool->is_borrowed)
-        {
-            std::cout << i + 1 << ". " << tool->name << "\n";
+        // if the worker is not found, this will ask for the ID again
+        if (company_worker == nullptr) {
+            std::cout << "Invalid ID. Try again.\n";
+            continue;
         }
-        else
-        {
-            std::cout << i + 1 << ". " << tool->name << " (borrowed by " << tool->borrowed_by << ")\n";
+
+        // after the ID and name has been found this part will greet the user and show them the list of the tools
+        std::cout << "Hello, " << company_worker->name << " (" << company_worker->id
+                  << "), What would you like to borrow today?\n";
+
+        // displays the tools
+        for (int i = 0; i < tools.size(); i++) {
+            Tool *tool = tools[i];
+            if (!tool->is_borrowed) {
+                std::cout << i + 1 << ". " << tool->name << "\n";
+            } else {
+                std::cout << i + 1 << ". " << tool->name << " (borrowed by " << tool->borrowed_by << ")\n";
+            }
         }
-    }
-    // asks the worker to type the number of the tool that they want to borrow
-    std::cout << "Enter the number of the tool you want to borrow: ";
-    int tool_serial;
-    std::cin >> tool_serial;
+        // asks the worker to type the number of the tool that they want to borrow
+        std::cout << "Enter the number of the tool you want to borrow: ";
+        int tool_serial;
+        std::cin >> tool_serial;
 
-    // asks the worker for how long they want to borrow the particular tool for
-    std::cout << "How long do you want to borrow " << tools[tool_serial - 1]->name << " for? (in hours): ";
-    int borrow_time;
-    std::cin >> borrow_time;
-
-    // checks if the borrow_time is not more than 24 hours
-    while (borrow_time > 24)
-    {
-        std::cout << "Borrow time cannot be more than 24 hours. Please enter a valid time: ";
+        // asks the worker for how long they want to borrow the particular tool for
+        std::cout << "How long do you want to borrow " << tools[tool_serial - 1]->name << " for? (in hours): ";
+        int borrow_time;
         std::cin >> borrow_time;
+
+        // checks if the borrow_time is not more than 24 hours
+        while (borrow_time > 24) {
+            std::cout << "Borrow time cannot be more than 24 hours. Please enter a valid time: ";
+            std::cin >> borrow_time;
+        }
+
+        // marks the tool as borrowed by the worker
+        tools[tool_serial - 1]->borrow(company_worker->id, borrow_time);
+
+        std::cout << company_worker->name << " (" << company_worker->id << ") has borrowed "
+                  << tools[tool_serial - 1]->name << " for " << borrow_time << " hour/s.\n";
+
+        std::cout << "Do you want to continue or end the program?\n";
+        std::string choice;
+        std::cin >> choice;
+
+        if (choice == "end")
+        {
+            return 0;
+        }
     }
-
-    // marks the tool as borrowed by the worker
-    tools[tool_serial - 1]->borrow(company_worker->id, borrow_time);
-
-    std::cout << company_worker->name << " (" << company_worker->id << ") has borrowed " << tools[tool_serial - 1]->name << " for " << borrow_time << " hour/s.\n";
 }
