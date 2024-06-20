@@ -94,8 +94,7 @@ int main() {
                     new CleaningTool("Pressure Washer"),
             };
 
-    while (true)
-    {
+    while (true) {
         // ask the user to enter the iD
         int id;
         std::cout << "Please enter your ID: ";
@@ -135,8 +134,7 @@ int main() {
         std::cin >> tool_serial;
 
         // a small check program that checks if the tool has been borrowed already
-        if (tools[tool_serial - 1]->is_borrowed)
-        {
+        if (tools[tool_serial - 1]->is_borrowed) {
             std::cout << "This tool is already borrowed. Try again.\n";
             continue;
         }
@@ -158,13 +156,37 @@ int main() {
         std::cout << company_worker->name << " (" << company_worker->id << ") has borrowed "
                   << tools[tool_serial - 1]->name << " for " << borrow_time << " hour/s.\n";
 
-        std::cout << "Do you want to continue or end the program?\n";
+
+        // asks the user what they want to do next
+        std::cout << "Do you want to: continue, return, summary, end\n";
         std::string choice;
         std::cin >> choice;
 
-        if (choice == "end")
-        {
-            return 0;
+        if (choice == "continue") {
+            continue;
+        } else if (choice == "return") {
+            std::cout << "Enter your ID: ";
+            int return_id;
+            std::cin >> return_id;
+
+            for (Tool *tool: tools) {
+                if (tool->borrowed_by == return_id) {
+                    tool->return_tool();
+                    std::cout << "Tool returned successfully.\n";
+                    break;
+                }
+            }
+        } else if (choice == "summary") {
+            for (Tool *tool: tools) {
+                if (tool->is_borrowed) {
+                    std::cout << tool->name << " --- Borrowed by " << tool->borrowed_by << " --- " << tool->borrow_time
+                              << " hour/s || Not Returned\n";
+                }
+            }
+        } else if (choice == "end") {
+            break;
         }
     }
+    return 0;
+
 }
