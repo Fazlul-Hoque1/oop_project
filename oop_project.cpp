@@ -94,7 +94,7 @@ int main()
                     new CleaningTool("Dustpan"),
                     new CleaningTool("Pressure Washer"),
             };
-    
+
     // ask the user to enter the iD
     int id;
     std::cout << "Please enter your ID: ";
@@ -142,6 +142,13 @@ int main()
     std::cout << "How long do you want to borrow " << tools[tool_serial - 1]->name << " for? (in hours): ";
     int borrow_time;
     std::cin >> borrow_time;
+
+    // checks if the borrow_time is not more than 24 hours
+    while (borrow_time > 24)
+    {
+        std::cout << "Borrow time cannot be more than 24 hours. Please enter a valid time: ";
+        std::cin >> borrow_time;
+    }
 
     // marks the tool as borrowed by the worker
     tools[tool_serial - 1]->borrow(company_worker->id, borrow_time);
