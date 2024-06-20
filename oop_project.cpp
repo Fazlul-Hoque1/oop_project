@@ -157,36 +157,45 @@ int main() {
                   << tools[tool_serial - 1]->name << " for " << borrow_time << " hour/s.\n";
 
 
-        // asks the user what they want to do next
-        std::cout << "Do you want to: continue, return, summary, end\n";
-        std::string choice;
-        std::cin >> choice;
+        while (true) {
+            // asks the worker what he/she wants to do next
+            std::cout << "Do you want to: continue, return, summary, end\n";
+            std::string choice;
+            std::cin >> choice;
 
-        if (choice == "continue") {
-            continue;
-        } else if (choice == "return") {
-            std::cout << "Enter your ID: ";
-            int return_id;
-            std::cin >> return_id;
+            // from here the following code does the action based on what the user picked from above
+            if (choice == "continue") {
+                break;
+            } else if (choice == "return") {
+                std::cout << "Enter your ID: ";
+                int return_id;
+                std::cin >> return_id;
 
-            for (Tool *tool: tools) {
-                if (tool->borrowed_by == return_id) {
-                    tool->return_tool();
-                    std::cout << "Tool returned successfully.\n";
-                    break;
+                bool tool_returned = false;
+                for (Tool *tool: tools) {
+                    if (tool->borrowed_by == return_id) {
+                        tool->return_tool();
+                        std::cout << "Tool returned successfully.\n";
+                        tool_returned = true;
+                        break;
+                    }
+                }
+                if (!tool_returned) {
+                    std::cout << "No tool borrowed by this ID.\n";
                 }
             }
-        } else if (choice == "summary") {
-            for (Tool *tool: tools) {
-                if (tool->is_borrowed) {
-                    std::cout << tool->name << " --- Borrowed by " << tool->borrowed_by << " --- " << tool->borrow_time
-                              << " hour/s || Not Returned\n";
+            else if (choice == "summary")
+            {
+                for (Tool *tool: tools) {
+                    if (tool->is_borrowed) {
+                        std::cout << tool->name << " --- Borrowed by " << tool->borrowed_by << " --- "
+                                  << tool->borrow_time << " hour/s || Not Returned\n";
+                    }
                 }
             }
-        } else if (choice == "end") {
-            break;
+            else if (choice == "end"){
+            }
         }
     }
-    return 0;
 
 }
