@@ -94,6 +94,7 @@ int main()
                     new CleaningTool("Dustpan"),
                     new CleaningTool("Pressure Washer"),
             };
+    
     // ask the user to enter the iD
     int id;
     std::cout << "Please enter your ID: ";
@@ -132,5 +133,18 @@ int main()
             std::cout << i + 1 << ". " << tool->name << " (borrowed by " << tool->borrowed_by << ")\n";
         }
     }
+    // asks the worker to type the number of the tool that they want to borrow
+    std::cout << "Enter the number of the tool you want to borrow: ";
+    int tool_serial;
+    std::cin >> tool_serial;
 
+    // asks the worker for how long they want to borrow the particular tool for
+    std::cout << "How long do you want to borrow " << tools[tool_serial - 1]->name << " for? (in hours): ";
+    int borrow_time;
+    std::cin >> borrow_time;
+
+    // marks the tool as borrowed by the worker
+    tools[tool_serial - 1]->borrow(company_worker->id, borrow_time);
+
+    std::cout << company_worker->name << " (" << company_worker->id << ") has borrowed " << tools[tool_serial - 1]->name << " for " << borrow_time << " hour/s.\n";
 }
