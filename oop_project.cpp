@@ -134,6 +134,13 @@ int main() {
         int tool_serial;
         std::cin >> tool_serial;
 
+        // a small check program that checks if the tool has been borrowed already
+        if (tools[tool_serial - 1]->is_borrowed)
+        {
+            std::cout << "This tool is already borrowed. Try again.\n";
+            continue;
+        }
+
         // asks the worker for how long they want to borrow the particular tool for
         std::cout << "How long do you want to borrow " << tools[tool_serial - 1]->name << " for? (in hours): ";
         int borrow_time;
