@@ -94,7 +94,7 @@ int main()
                     new CleaningTool("Dustpan"),
                     new CleaningTool("Pressure Washer"),
             };
-
+    // ask the user to enter the iD
     int id;
     std::cout << "Please enter your ID: ";
     std::cin >> id;
@@ -117,5 +117,20 @@ int main()
     }
 
     // after the ID and name has been found this part will greet the user and show them the list of the tools
-    std::cout << "Hello, " << company_worker->name << " (" << company_worker->id << "), TEST COMPLETED\n";
-};
+    std::cout << "Hello, " << company_worker->name << " (" << company_worker->id << "), What would you like to borrow today?\n";
+
+    // displays the tools
+    for (int i = 0; i < tools.size(); i++)
+    {
+        Tool* tool = tools[i];
+        if (!tool->is_borrowed)
+        {
+            std::cout << i + 1 << ". " << tool->name << "\n";
+        }
+        else
+        {
+            std::cout << i + 1 << ". " << tool->name << " (borrowed by " << tool->borrowed_by << ")\n";
+        }
+    }
+
+}
