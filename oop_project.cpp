@@ -58,6 +58,14 @@ public:
 };
 
 int main() {
+    // a basic "cout" program that adds some design to the program as it starts
+    std::cout << "###########################################\n";
+    std::cout << "#                                         #\n";
+    std::cout << "#    Welcome To Fazlul's Tool Borrowing  #\n";
+    std::cout << "#               Program...               #\n";
+    std::cout << "#                                         #\n";
+    std::cout << "###########################################\n";
+
     // this contains all the information of the workers that are working in the company ( Name and ID )
     std::vector<Worker> workers =
             {
