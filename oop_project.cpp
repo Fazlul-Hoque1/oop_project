@@ -13,7 +13,7 @@ public:
     int borrowed_by;
     int borrow_time;
 
-    Tool(std::string name) : name(std::move(name)), is_borrowed(false), borrowed_by(0), borrow_time(0) {}
+    explicit Tool(std::string name) : name(std::move(name)), is_borrowed(false), borrowed_by(0), borrow_time(0) {}
 
     void borrow(int id, int hours)
     {
@@ -34,17 +34,17 @@ public:
 class ConstructionTool : public Tool
 {
 public:
-    ConstructionTool(std::string name) : Tool(std::move(name)) {}
+    explicit ConstructionTool(std::string name) : Tool(std::move(name)) {}
 };
 class DecorationTool : public Tool
 {
 public:
-    DecorationTool(std::string name) : Tool(std::move(name)) {}
+    explicit DecorationTool(std::string name) : Tool(std::move(name)) {}
 };
 class CleaningTool : public Tool
 {
 public:
-    CleaningTool(std::string name) : Tool(std::move(name)) {}
+    explicit CleaningTool(std::string name) : Tool(std::move(name)) {}
 };
 
 // this is the worker class
@@ -57,7 +57,8 @@ public:
     Worker(std::string name, int iD) : name(std::move(name)), id(iD) {}
 };
 
-int main() {
+int main()
+{
     // a basic "cout" program that adds some design to the program as it starts
     std::cout << "###########################################\n";
     std::cout << "#                                         #\n";
@@ -102,23 +103,27 @@ int main() {
                     new CleaningTool("Pressure Washer"),
             };
 
-    while (true) {
-        // ask the user to enter the iD
+    while (true)
+    {
+        // asks the user to enter the iD
         int id;
         std::cout << "Please enter your ID: ";
         std::cin >> id;
 
         Worker *company_worker = nullptr; // a pointer to store the found worker
         // this will search for the worker with the entered ID
-        for (Worker &worker: workers) {
-            if (worker.id == id) {
+        for (Worker &worker: workers)
+        {
+            if (worker.id == id)
+            {
                 company_worker = &worker;
                 break;
             }
         }
 
         // if the worker is not found, this will ask for the ID again
-        if (company_worker == nullptr) {
+        if (company_worker == nullptr)
+        {
             std::cout << "Invalid ID. Try again.\n";
             continue;
         }
@@ -128,11 +133,15 @@ int main() {
                   << "), What would you like to borrow today?\n";
 
         // displays the tools
-        for (int i = 0; i < tools.size(); i++) {
+        for (int i = 0; i < tools.size(); i++)
+        {
             Tool *tool = tools[i];
-            if (!tool->is_borrowed) {
+            if (!tool->is_borrowed)
+            {
                 std::cout << i + 1 << ". " << tool->name << "\n";
-            } else {
+            }
+            else
+            {
                 std::cout << i + 1 << ". " << tool->name << " (borrowed by " << tool->borrowed_by << ")\n";
             }
         }
@@ -142,7 +151,8 @@ int main() {
         std::cin >> tool_serial;
 
         // a small check program that checks if the tool has been borrowed already
-        if (tools[tool_serial - 1]->is_borrowed) {
+        if (tools[tool_serial - 1]->is_borrowed)
+        {
             std::cout << "This tool is already borrowed. Try again.\n";
             continue;
         }
@@ -153,7 +163,8 @@ int main() {
         std::cin >> borrow_time;
 
         // checks if the borrow_time is not more than 24 hours
-        while (borrow_time > 24) {
+        while (borrow_time > 24)
+        {
             std::cout << "Borrow time cannot be more than 24 hours. Please enter a valid time: ";
             std::cin >> borrow_time;
         }
@@ -164,47 +175,55 @@ int main() {
         std::cout << company_worker->name << " (" << company_worker->id << ") has borrowed "
                   << tools[tool_serial - 1]->name << " for " << borrow_time << " hour/s.\n";
 
-
-        while (true) {
+        while (true)
+        {
             // asks the worker what he/she wants to do next
             std::cout << "Do you want to: continue, return, summary, end\n";
             std::string choice;
             std::cin >> choice;
 
             // from here the following code does the action based on what the user picked from above
-            if (choice == "continue") {
+            if (choice == "continue")
+            {
                 break;
-            } else if (choice == "return") {
+            }
+            else if (choice == "return")
+            {
                 std::cout << "Enter your ID: ";
                 int return_id;
                 std::cin >> return_id;
 
                 bool tool_returned = false;
-                for (Tool *tool: tools) {
-                    if (tool->borrowed_by == return_id) {
+                for (Tool *tool: tools)
+                {
+                    if (tool->borrowed_by == return_id)
+                    {
                         tool->return_tool();
                         std::cout << "Tool returned successfully.\n";
                         tool_returned = true;
                         break;
                     }
                 }
-                if (!tool_returned) {
+                if (!tool_returned)
+                {
                     std::cout << "No tool borrowed by this ID.\n";
                 }
             }
             else if (choice == "summary")
             {
-                for (Tool *tool: tools) {
-                    if (tool->is_borrowed) {
+                for (Tool *tool: tools)
+                {
+                    if (tool->is_borrowed)
+                    {
                         std::cout << tool->name << " --- Borrowed by " << tool->borrowed_by << " --- "
                                   << tool->borrow_time << " hour/s || Not Returned\n";
                     }
                 }
             }
-            else if (choice == "end"){
+            else if (choice == "end")
+            {
                 return 0;
             }
         }
     }
-
 }
