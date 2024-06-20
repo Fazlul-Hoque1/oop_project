@@ -194,6 +194,7 @@ int main() {
                 }
             }
             else if (choice == "end"){
+                return 0;
             }
         }
     }
