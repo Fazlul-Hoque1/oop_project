@@ -16,14 +16,17 @@ public:
 
     explicit Tool(std::string name) : name(std::move(name)), is_borrowed(false), borrowed_by(0), borrow_time(0) {}
 
-    void borrow(int id, int hours)
+    virtual ~Tool() = default;
+
+    // used virtual function as we can use that to redefine in a derived class to achieve polymorphism
+    virtual void borrow(int id, int hours)
     {
         is_borrowed = true;
         borrowed_by = id;
         borrow_time = hours;
     }
 
-    void return_tool()
+    virtual void return_tool()
     {
         is_borrowed = false;
         borrowed_by = 0;
@@ -31,21 +34,60 @@ public:
     }
 };
 
-// now we will add the child classes
+// now we will add the child classes , derived class representing the tools
 class ConstructionTool : public Tool
 {
 public:
+    // a constructor that sets the name of the construction tool
     explicit ConstructionTool(std::string name) : Tool(std::move(name)) {}
+
+    // override the borrow function to use base implementation
+    void borrow(int id, int hours) override
+    {
+        Tool::borrow(id, hours);
+    }
+
+    // override the return_tool function to use base implementation
+    void return_tool() override
+    {
+        Tool::return_tool();
+    }
 };
 class DecorationTool : public Tool
 {
 public:
+    // a constructor that sets the name of the decoration tool
     explicit DecorationTool(std::string name) : Tool(std::move(name)) {}
+
+    // override the borrow function to use base implementation
+    void borrow(int id, int hours) override
+    {
+        Tool::borrow(id, hours);
+    }
+
+    // override the return_tool function to use base implementation
+    void return_tool() override
+    {
+        Tool::return_tool();
+    }
 };
 class CleaningTool : public Tool
 {
 public:
+    // a constructor that sets the name of the cleaning tool
     explicit CleaningTool(std::string name) : Tool(std::move(name)) {}
+
+    // override the borrow function to use base implementation
+    void borrow(int id, int hours) override
+    {
+        Tool::borrow(id, hours);
+    }
+
+    // override the borrow function to use base implementation
+    void return_tool() override
+    {
+        Tool::return_tool();
+    }
 };
 
 // this is the worker class
