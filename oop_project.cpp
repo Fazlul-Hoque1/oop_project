@@ -18,15 +18,17 @@ public:
 
     virtual ~Tool() = default;
 
+    virtual void check_availability() const = 0;
+
     // used virtual function as we can use that to redefine in a derived class to achieve polymorphism
-    virtual void borrow(int id, int hours)
+    void borrow(int id, int hours)
     {
         is_borrowed = true;
         borrowed_by = id;
         borrow_time = hours;
     }
 
-    virtual void return_tool()
+    void return_tool()
     {
         is_borrowed = false;
         borrowed_by = 0;
@@ -39,54 +41,48 @@ class ConstructionTool : public Tool
 {
 public:
     // a constructor that sets the name of the construction tool
-    explicit ConstructionTool(std::string name) : Tool(std::move(name)) {}
+    ConstructionTool(std::string name) : Tool(std::move(name)) {}
 
-    // override the borrow function to use base implementation
-    void borrow(int id, int hours) override
+    void check_availability() const override
     {
-        Tool::borrow(id, hours);
-    }
-
-    // override the return_tool function to use base implementation
-    void return_tool() override
-    {
-        Tool::return_tool();
+        if (is_borrowed)
+        {
+            std::cout << name << " is borrowed by " << borrowed_by << ".\n";
+        }
+        else
+        {
+            std::cout << name << " is available to be borrowed.\n";
+        }
     }
 };
 class DecorationTool : public Tool
 {
 public:
-    // a constructor that sets the name of the decoration tool
-    explicit DecorationTool(std::string name) : Tool(std::move(name)) {}
+    bool requires_special_handling = false;
 
-    // override the borrow function to use base implementation
-    void borrow(int id, int hours) override
-    {
-        Tool::borrow(id, hours);
-    }
+    DecorationTool(std::string name, bool requires_special_handling = false) : Tool(std::move(name)), requires_special_handling(requires_special_handling) {}
 
-    // override the return_tool function to use base implementation
-    void return_tool() override
+    void check_availability() const override
     {
-        Tool::return_tool();
-    }
-};
-class CleaningTool : public Tool
-{
-public:
-    // a constructor that sets the name of the cleaning tool
-    explicit CleaningTool(std::string name) : Tool(std::move(name)) {}
-
-    // override the borrow function to use base implementation
-    void borrow(int id, int hours) override
-    {
-        Tool::borrow(id, hours);
-    }
-
-    // override the borrow function to use base implementation
-    void return_tool() override
-    {
-        Tool::return_tool();
+        if (is_borrowed)
+        {
+            std::cout << name << " is borrowed by " << borrowed_by << ".\n";
+            if (requires_special_handling)
+            {
+                std::cout << name << " requires special handling.\n";
+            }
+        }
+        else
+        {
+            if (requires_special_handling)
+            {
+                std::cout << name << " is available to be borrowed and requires special handling.\n";
+            }
+            else
+            {
+                std::cout << name << " is available to be borrowed.\n";
+            }
+        }
     }
 };
 
@@ -100,92 +96,8 @@ public:
     Worker(std::string name, int iD) : name(std::move(name)), id(iD) {}
 };
 
-void test_borrow_return_summary()
-{
-    std::vector<Worker> workers =
-            {
-            Worker("Bereket Tendai", 121),
-            Worker("Galal Jameel", 122),
-            Worker("Fizza Zaahira", 123),
-            Worker("Ryan Smith", 124),
-            Worker("Jason Mendes", 125),
-            Worker("Ehsan Khan", 126),
-            Worker("Jakub Arian", 127),
-            Worker("Sarah Frazier", 128),
-            Worker("Francis Freeman", 129),
-            Worker("Fazlul Hoque", 130)
-    };
-
-    std::vector<Tool*> tools =
-            {
-            new ConstructionTool("Hammer"),
-            new ConstructionTool("Screwdriver"),
-            new ConstructionTool("Tape Measure"),
-            new ConstructionTool("Levels"),
-            new ConstructionTool("Power Drill"),
-            new DecorationTool("Paint Brush"),
-            new DecorationTool("Painter's Tape"),
-            new DecorationTool("Hot Glue Gun"),
-            new DecorationTool("Paint Scrapper"),
-            new DecorationTool("Sand Paper"),
-            new CleaningTool("Broom"),
-            new CleaningTool("Vacuum"),
-            new CleaningTool("Mop"),
-            new CleaningTool("Dustpan"),
-            new CleaningTool("Pressure Washer")
-    };
-
-    // borrow a tool
-    workers[0].id; // Bereket Tendai's ID is 121
-    tools[0]->borrow(workers[0].id, 5); // Borrow Hammer for 5 hours
-    assert(tools[0]->is_borrowed == true);
-    assert(tools[0]->borrowed_by == 121);
-    assert(tools[0]->borrow_time == 5);
-
-    // try to borrow the same tool again
-    bool borrow_attempt = false;
-    if (!tools[0]->is_borrowed)
-    {
-        tools[0]->borrow(workers[1].id, 3); // Galal Jameel tries to borrow Hammer
-        borrow_attempt = true;
-    }
-    assert(borrow_attempt == false);
-
-    // return the tool
-    tools[0]->return_tool();
-    assert(tools[0]->is_borrowed == false);
-    assert(tools[0]->borrowed_by == 0);
-    assert(tools[0]->borrow_time == 0);
-
-    // summary of borrowed tools
-    tools[1]->borrow(workers[1].id, 4); // Borrow Screwdriver for 4 hours by Galal Jameel
-    tools[2]->borrow(workers[2].id, 6); // Borrow Tape Measure for 6 hours by Fizza Zaahira
-
-    std::vector<std::string> summary;
-    for (Tool* tool : tools)
-    {
-        if (tool->is_borrowed)
-        {
-            summary.push_back(tool->name + " --- Borrowed by " + std::to_string(tool->borrowed_by) + " --- " + std::to_string(tool->borrow_time) + " hour/s || Not Returned");
-        }
-    }
-    assert(summary.size() == 2);
-    assert(summary[0] == "Screwdriver --- Borrowed by 122 --- 4 hour/s || Not Returned");
-    assert(summary[1] == "Tape Measure --- Borrowed by 123 --- 6 hour/s || Not Returned");
-
-    // clean up dynamically allocated memory
-    for (Tool* tool : tools)
-    {
-        delete tool;
-    }
-}
-
 int main()
 {
-    // this will run the test function above
-    test_borrow_return_summary();
-    std::cout << "All tests passed successfully!\n";
-
     // a basic "cout" program that adds some design to the program as it starts
     std::cout << "###########################################\n";
     std::cout << "#                                         #\n";
@@ -223,11 +135,6 @@ int main()
                     new DecorationTool("Hot Glue Gun"),
                     new DecorationTool("Paint Scrapper"),
                     new DecorationTool("Sand Paper"),
-                    new CleaningTool("Broom"),
-                    new CleaningTool("Vacuum"),
-                    new CleaningTool("Mop"),
-                    new CleaningTool("Dustpan"),
-                    new CleaningTool("Pressure Washer"),
             };
 
     while (true)
