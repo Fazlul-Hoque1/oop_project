@@ -1,11 +1,8 @@
-// adding comments in every part for a better/clear understanding
-// added libraries that is required to code and run this program
-#include <iostream> // used for input and output operations
-#include <vector> // used for using std::vector
-#include <string> // used for std::string class
-#include <cassert> // used for testing
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cassert>
 
-// this is our main class ( or known as the parent class )
 class Tool
 {
 public:
@@ -20,7 +17,6 @@ public:
 
     virtual void check_availability() const = 0;
 
-    // used virtual function as we can use that to redefine in a derived class to achieve polymorphism
     void borrow(int id, int hours)
     {
         is_borrowed = true;
@@ -36,11 +32,9 @@ public:
     }
 };
 
-// now we will add the child classes , derived class representing the tools
 class ConstructionTool : public Tool
 {
 public:
-    // a constructor that sets the name of the construction tool
     ConstructionTool(std::string name) : Tool(std::move(name)) {}
 
     void check_availability() const override
@@ -55,26 +49,27 @@ public:
         }
     }
 };
+
 class DecorationTool : public Tool
 {
 public:
-    bool requires_special_handling = false;
+    bool special_handling = false;
 
-    DecorationTool(std::string name, bool requires_special_handling = false) : Tool(std::move(name)), requires_special_handling(requires_special_handling) {}
+    DecorationTool(std::string name, bool special_handling = false) : Tool(std::move(name)), special_handling(special_handling) {}
 
     void check_availability() const override
     {
         if (is_borrowed)
         {
             std::cout << name << " is borrowed by " << borrowed_by << ".\n";
-            if (requires_special_handling)
+            if (special_handling)
             {
                 std::cout << name << " requires special handling.\n";
             }
         }
         else
         {
-            if (requires_special_handling)
+            if (special_handling)
             {
                 std::cout << name << " is available to be borrowed and requires special handling.\n";
             }
@@ -86,7 +81,6 @@ public:
     }
 };
 
-// this is the worker class
 class Worker
 {
 public:
@@ -98,13 +92,29 @@ public:
 
 int main()
 {
-    // a basic "cout" program that adds some design to the program as it starts
     std::cout << "###########################################\n";
     std::cout << "#                                         #\n";
     std::cout << "#    Welcome To Fazlul's Tool Borrowing  #\n";
     std::cout << "#               Program...               #\n";
     std::cout << "#                                         #\n";
     std::cout << "###########################################\n";
+
+    // this bit contains all the class/names of the tools that will be used later in the program
+    // the format being used for tools is ( "name_of_the_tool", "tool_description" )
+    // in decoration tools I have added ', true' so that it lets the user know that this tool requires special handling
+    std::vector<Tool*> tools =
+            {
+                    new ConstructionTool("Hammer"),
+                    new ConstructionTool("Screwdriver"),
+                    new ConstructionTool("Tape Measure"),
+                    new ConstructionTool("Levels"),
+                    new ConstructionTool("Power Drill"),
+                    new DecorationTool("Paint Brush"),
+                    new DecorationTool("Painter's Tape"),
+                    new DecorationTool("Hot Glue Gun", true),
+                    new DecorationTool("Paint Scrapper", true),
+                    new DecorationTool("Sand Paper"),
+            };
 
     // this contains all the information of the workers that are working in the company ( Name and ID )
     std::vector<Worker> workers =
@@ -121,106 +131,99 @@ int main()
                     Worker("Fazlul Hoque", 130)
             };
 
-    // this bit contains all the class/names of the tools that will be used later in the program
-    // the format being used for tools is ( "name_of_the_tool", "tool_description" )
-    std::vector<Tool *> tools =
-            {
-                    new ConstructionTool("Hammer"),
-                    new ConstructionTool("Screwdriver"),
-                    new ConstructionTool("Tape Measure"),
-                    new ConstructionTool("Levels"),
-                    new ConstructionTool("Power Drill"),
-                    new DecorationTool("Paint Brush"),
-                    new DecorationTool("Painter's Tape"),
-                    new DecorationTool("Hot Glue Gun"),
-                    new DecorationTool("Paint Scrapper"),
-                    new DecorationTool("Sand Paper"),
-            };
 
-    while (true)
-    {
-        // asks the user to enter the iD
-        int id;
-        std::cout << "Please enter your ID: ";
-        std::cin >> id;
-
-        Worker *company_worker = nullptr; // a pointer to store the found worker
-        // this will search for the worker with the entered ID
-        for (Worker &worker: workers)
-        {
-            if (worker.id == id)
-            {
-                company_worker = &worker;
-                break;
-            }
-        }
-
-        // if the worker is not found, this will ask for the ID again
-        if (company_worker == nullptr)
-        {
-            std::cout << "Invalid ID. Try again.\n";
-            continue;
-        }
-
-        // after the ID and name has been found this part will greet the user and show them the list of the tools
-        std::cout << "Hello, " << company_worker->name << " (" << company_worker->id
-                  << "), What would you like to borrow today?\n";
-
-        // displays the tools
-        for (int i = 0; i < tools.size(); i++)
-        {
-            Tool *tool = tools[i];
-            if (!tool->is_borrowed)
-            {
-                std::cout << i + 1 << ". " << tool->name << "\n";
-            }
-            else
-            {
-                std::cout << i + 1 << ". " << tool->name << " (borrowed by " << tool->borrowed_by << ")\n";
-            }
-        }
-        // asks the worker to type the number of the tool that they want to borrow
-        std::cout << "Enter the number of the tool you want to borrow: ";
-        int tool_serial;
-        std::cin >> tool_serial;
-
-        // a small check program that checks if the tool has been borrowed already
-        if (tools[tool_serial - 1]->is_borrowed)
-        {
-            std::cout << "This tool is already borrowed. Try again.\n";
-            continue;
-        }
-
-        // asks the worker for how long they want to borrow the particular tool for
-        std::cout << "How long do you want to borrow " << tools[tool_serial - 1]->name << " for? (in hours): ";
-        int borrow_time;
-        std::cin >> borrow_time;
-
-        // checks if the borrow_time is not more than 24 hours
-        while (borrow_time > 24)
-        {
-            std::cout << "Borrow time cannot be more than 24 hours. Please enter a valid time: ";
-            std::cin >> borrow_time;
-        }
-
-        // marks the tool as borrowed by the worker
-        tools[tool_serial - 1]->borrow(company_worker->id, borrow_time);
-
-        std::cout << company_worker->name << " (" << company_worker->id << ") has borrowed "
-                  << tools[tool_serial - 1]->name << " for " << borrow_time << " hour/s.\n";
 
         while (true)
         {
-            // asks the worker what he/she wants to do next
-            std::cout << "Do you want to: continue, return, summary, end\n";
+            std::cout << "Do you want to check_availability, borrow, return, summary or end? ";
+            // this will work based on what the user choice is
             std::string choice;
             std::cin >> choice;
 
-            // from here the following code does the action based on what the user picked from above
-            if (choice == "continue")
+            // this will check if the item is available to be borrowed
+            if (choice == "check_availability")
             {
-                break;
+                std::cout << "Here is the availability of tools:\n";
+                for (Tool* tool : tools)
+                {
+                    tool->check_availability();
+                }
             }
+
+                // this will show a list of tools that the user can borrow + will let the user pick a tool to borrow
+            else if (choice == "borrow")
+            {
+                std::cout << "Enter your ID: ";
+                int borrow_id;
+                std::cin >> borrow_id;
+
+                Worker* company_worker = nullptr; // a pointer to store the found worker
+                // this will search for the worker with the entered ID
+                for (Worker& worker : workers)
+                {
+                    if (worker.id == borrow_id)
+                    {
+                        company_worker = &worker;
+                        break;
+                    }
+                }
+
+                if (company_worker == nullptr)
+                {
+                    std::cout << "Invalid ID. Try again.\n";
+                    continue;
+                }
+
+                std::cout << "Hello, " << company_worker->name << " (" << company_worker->id << ")!\n";
+
+                for (int i = 0; i < tools.size(); i++)
+                {
+                    Tool* tool = tools[i];
+                    if (!tool->is_borrowed)
+                    {
+                        std::cout << i + 1 << ". " << tool->name << "\n";
+                    }
+                    else
+                    {
+                        std::cout << i + 1 << ". " << tool->name << " (borrowed by " << tool->borrowed_by << ")\n";
+                    }
+                }
+
+                std::cout << "Enter serial number of the tool you want to borrow: ";
+                int tool_serial;
+                std::cin >> tool_serial;
+
+                // if a user does not check the check_availability then the program will automatically let them know that the tool is borrowed already
+                if (tool_serial > 0 && tool_serial <= tools.size())
+                {
+                    if (tools[tool_serial - 1]->is_borrowed)
+                    {
+                        std::cout << "This tool is already borrowed. Try again.\n";
+                        continue;
+                    }
+
+                    std::cout << "How long do you want to borrow " << tools[tool_serial - 1]->name << " for? (in hours): ";
+                    int borrow_time;
+                    std::cin >> borrow_time;
+
+                    // cannot borrow for more than 24hours
+                    while (borrow_time > 24)
+                    {
+                        std::cout << "Borrow time cannot be more than 24 hours. Please enter a valid time: ";
+                        std::cin >> borrow_time;
+                    }
+
+                    tools[tool_serial - 1]->borrow(borrow_id, borrow_time);
+
+                    std::cout << "You have borrowed " << tools[tool_serial - 1]->name << " for " << borrow_time << " hour/s.\n";
+                }
+                else
+                {
+                    std::cout << "Invalid choice. Try again.\n";
+                }
+            }
+
+                // this will let the user return a tool that is borrowed
             else if (choice == "return")
             {
                 std::cout << "Enter your ID: ";
@@ -243,6 +246,8 @@ int main()
                     std::cout << "No tool borrowed by this ID.\n";
                 }
             }
+
+                // this will show a list of the tools that has not been returned yet
             else if (choice == "summary")
             {
                 for (Tool* tool : tools)
@@ -253,11 +258,16 @@ int main()
                     }
                 }
             }
+
+                // this will end the program
             else if (choice == "end")
             {
                 return 0;
             }
+            else
+            {
+                std::cout << "Invalid choice. Try again.\n";
+            }
         }
-
     }
-}
+
