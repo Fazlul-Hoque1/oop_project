@@ -3,6 +3,7 @@
 #include <string>
 #include <cassert>
 
+// abstract base class for tools
 class Tool
 {
 public:
@@ -15,8 +16,10 @@ public:
 
     virtual ~Tool() = default;
 
+    //virtual function to check the availability of the tool
     virtual void check_availability() const = 0;
 
+    // borrows the tool for a some (x) hours
     void borrow(int id, int hours)
     {
         is_borrowed = true;
@@ -24,6 +27,7 @@ public:
         borrow_time = hours;
     }
 
+    // returns the tool
     void return_tool()
     {
         is_borrowed = false;
@@ -32,9 +36,11 @@ public:
     }
 };
 
+// these can be called child classes
 class ConstructionTool : public Tool
 {
 public:
+    // a constructor
     ConstructionTool(std::string name) : Tool(std::move(name)) {}
 
     void check_availability() const override
@@ -55,6 +61,7 @@ class DecorationTool : public Tool
 public:
     bool special_handling = false;
 
+    // constructor
     DecorationTool(std::string name, bool special_handling = false) : Tool(std::move(name)), special_handling(special_handling) {}
 
     void check_availability() const override
@@ -90,8 +97,51 @@ public:
     Worker(std::string name, int iD) : name(std::move(name)), id(iD) {}
 };
 
+void test_tool_availability()
+{
+    ConstructionTool hammer("Hammer");
+    assert(!hammer.is_borrowed);
+    hammer.borrow(1, 2);
+    assert(hammer.is_borrowed);
+    hammer.return_tool();
+    assert(!hammer.is_borrowed);
+
+    DecorationTool paintBrush("Paint Brush", true);
+    assert(!paintBrush.is_borrowed);
+    paintBrush.borrow(2, 3);
+    assert(paintBrush.is_borrowed);
+    paintBrush.return_tool();
+    assert(!paintBrush.is_borrowed);
+}
+
+void test_borrow_tool()
+{
+    ConstructionTool screwdriver("Screwdriver");
+    screwdriver.borrow(1, 4);
+    assert(screwdriver.is_borrowed);
+    assert(screwdriver.borrowed_by == 1);
+    assert(screwdriver.borrow_time == 4);
+}
+
+void test_return_tool()
+{
+    DecorationTool glueGun("Hot Glue Gun", true);
+    glueGun.borrow(2, 5);
+    assert(glueGun.is_borrowed);
+    glueGun.return_tool();
+    assert(!glueGun.is_borrowed);
+    assert(glueGun.borrowed_by == 0);
+    assert(glueGun.borrow_time == 0);
+}
+
 int main()
 {
+    // running the tests
+    test_tool_availability();
+    test_borrow_tool();
+    test_return_tool();
+    std::cout << "All tests passed!\n";
+
     std::cout << "###########################################\n";
     std::cout << "#                                         #\n";
     std::cout << "#    Welcome To Fazlul's Tool Borrowing  #\n";
